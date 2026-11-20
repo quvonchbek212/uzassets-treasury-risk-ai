@@ -1,81 +1,117 @@
-# UzAssets — Payment Calendar Risk Forecast AI Service
+# 💼 UzAssets Treasury Risk AI · Payment Calendar Risk Analytics Engine
 
-> **Kompaniya haqida:** «UzAssets» investitsiya kompaniyasi AJ davlat ulushi mavjud yirik korxonalarni transformatsiya qilish, xususiylashtirish va kapital bozoriga tayyorlash jarayonlarini amalga oshiruvchi yetakchi investitsiya kompaniyasidir.
+[![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-green.svg)](https://fastapi.tiangolo.com)
+[![Gemini](https://img.shields.io/badge/LLM-Google%20Gemini%20Flash-4285F4.svg)](https://ai.google.dev)
+[![vLLM](https://img.shields.io/badge/Inference-vLLM%20%28Gemma%2031B%29-purple.svg)](https://vllm.ai)
+[![License](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
+[![Tests](https://img.shields.io/badge/Tests-32%20passed-brightgreen.svg)]()
 
-Ushbu servis «UzAssets» korxonalari va g'aznachilik boshqaruvi (**Treasury Payment Calendar**) uchun to'lovlar oqimi, kassa uzilishlari va moliyaviy xatarlarni sun'iy intellekt (AI) orqali chuqur tahlil qilib, rahbarlar va moliyachilar uchun **ijroiy tahliliy hisobot (Executive Risk Narrative)** va operatsion tavsiyalarni shakllantiruvchi mikroxizmatdir.
+> **Enterprise Context:** **«UzAssets» Investment Company AJ** is Uzbekistan's premier state-owned asset management and investment enterprise, driving transformation, privatization, and capital market readiness across major national industrial entities.
 
----
-
-## 🎯 Asosiy Vazifasi va Imkoniyatlari
-
-* **Xatar drayverlarini aniqlash (Key Drivers):**
-  * `PAYMENT_CONCENTRATION` — Katta hajmdagi to'lovlarning bir kunda jamlanishi;
-  * `OVERDUE_PRESSURE` — Muddati o'tgan to'lovlar bosimi va jarimalar xavfi;
-  * `APPROVAL_BOTTLENECK` — Tasdiqlash jarayonida qolib ketgan to'lovlar to'siqlari;
-  * `BUDGET_LIMIT_STRESS` — Byudjet limitlarining yetishmovchiligi;
-  * `CURRENCY_EXPOSURE` — Valyuta kurslari tebranishi xatarlari;
-  * `DEBT_SERVICE_STRESS` — Qarzga xizmat ko'rsatish yuki.
-* **Operatsion Tavsiyalar (Recommended Actions):** Qaysi to'lovlarni kechiktirish xavfsiz ekanligi, qaysilarini esa zudlik bilan amalga oshirish shartligi bo'yicha darajali (`HIGH`, `MEDIUM`, `LOW`) amaliy tavsiyalar.
-* **Ko'p Tilli:** O'zbek, rus va ingliz tillarida to'liq hisobotlar tayyorlaydi.
-* **Qat'iy Fallback Kafolati:** AI provayder o'chirilgan yoki tarmoq nosoz bo'lsa ham, tizim to'xtab qolmaydi — `narrative_fallback.py` moduli deterministik qoidalar asosida to'liq xatar tahlilini taqdim etadi.
+This microservice powers the **UzAssets Treasury Payment Calendar**, providing real-time cash flow risk forecasting, overdue payment bottleneck analysis, and generative multi-lingual **Executive Risk Narratives** for financial directors and enterprise executives.
 
 ---
 
-## 🏗 Arxitektura va Texnologiyalar
-
-* **Til va Framework:** Python 3.11+, FastAPI, Pydantic v2
-* **AI Provayderlar:**
-  * **Google Gemini API** — Murakkab moliyaviy matnlarni tushunish va tahliliy xulosa generatsiyasi;
-  * **vLLM (Gemma-31B)** — Korxona ichki serverida lokal inferensiya.
-* **Prompt Sanitizer:** Moliyaviy so'rovlardan shaxsiy va konfidensial identifikatorlarni tozalovchi himoya qatlami.
-* **Response Validator:** AI generatsiya qilgan javoblar sxemasini qat'iy tekshirish (hallutsinatsiyalarning oldini olish).
-* **Circuit Breaker:** Tashqi AI API xatoliklarida yuklamani to'xtatuvchi himoya zanjiri.
+## 📑 Table of Contents
+- [Executive Overview](#-executive-overview)
+- [Key Risk Drivers](#-key-risk-drivers)
+- [System Architecture](#-system-architecture)
+- [Deterministic Fallback Engine](#-deterministic-fallback-engine)
+- [API Endpoints](#-api-endpoints)
+- [Installation & Quickstart](#-installation--quickstart)
+- [Contact](#-contact)
 
 ---
 
-## 🚀 API Endpointlar
+## 🎯 Executive Overview
 
-Servis quyidagi asosiy yo'nalishlar bo'yicha ishlaydi:
+Managing treasury schedules across multi-enterprise conglomerates involves high financial volatility:
+* Unbalanced cash flows causing temporary liquidity gaps;
+* Imminent debt service deadlines and FX currency exposure;
+* Administrative approval bottlenecks delaying mission-critical vendor disbursements.
 
-| Metod | Endpoint | Tavsif |
+This system evaluates tabular payment schedules, computes risk scores across multiple dimensions, and synthesizes clear, actionable executive summaries with prioritized operational recommendations in **English, Uzbek, and Russian**.
+
+---
+
+## ⚡ Key Risk Drivers
+
+The engine evaluates and isolates 6 fundamental treasury risk vectors:
+1. `PAYMENT_CONCENTRATION`: High-volume outflows clustered on a single settlement date.
+2. `OVERDUE_PRESSURE`: Immediate default risk and penalty exposure from overdue obligations.
+3. `APPROVAL_BOTTLENECK`: Disbursements stalled in hierarchical administrative approval workflows.
+4. `BUDGET_LIMIT_STRESS`: Spending requests exceeding allocated organizational budget limits.
+5. `CURRENCY_EXPOSURE`: Exchange rate volatility risk on foreign currency denominated obligations.
+6. `DEBT_SERVICE_STRESS`: Senior loan interest and amortization payments dominating total liquidity.
+
+---
+
+## 🏗 System Architecture
+
+```mermaid
+graph TD
+    A[Treasury ERP / Payment Schedule] -->|POST /risk-forecast| B(FastAPI Gateway)
+    B --> C[Prompt Sanitizer & Token Redaction]
+    C --> D{Active AI Provider}
+    D -->|Cloud Inference| E[Google Gemini Flash SDK]
+    D -->|On-Premise Private Inference| F[vLLM / Gemma-31B Endpoint]
+    E --> G[Response Schema Validator]
+    F --> G
+    G -->|Hallucination or Network Error| H[Deterministic Rule-Based Fallback]
+    G -->|Valid AI Response| I[Executive Risk Narrative JSON]
+    H --> I
+```
+
+---
+
+## 🛡 Deterministic Fallback Engine
+
+Financial systems require 100% uptime guarantees. If the upstream LLM provider is unreachable, throttled, or fails validation, the built-in **Rule-Based Fallback Generator** (`narrative_fallback.py`) automatically synthesizes mathematically grounded executive narratives and recommendations directly from input telemetry without failing the HTTP request.
+
+---
+
+## 🚀 API Endpoints
+
+Swagger UI is accessible at: `http://localhost:8002/docs`
+
+| Method | Endpoint | Description |
 |---|---|---|
-| `POST` | `/api/v1/treasury/payment-calendar/risk-forecast` | Butun davr (oy/hafta) bo'yicha umumiy xatar hisoboti |
-| `POST` | `/api/v1/treasury/payment-calendar/risk-forecast/days/{date}` | Tanlangan aniq kun bo'yicha chuqur tahliliy hisobot |
-| `POST` | `/api/v1/treasury/payment-calendar/risk-forecast/explain` | Aniq xatar skori va drayveri bo'yicha batafsil izoh |
-| `GET` | `/health` | Servis sog'lomligini tekshirish |
+| `POST` | `/api/v1/treasury/payment-calendar/risk-forecast` | Generates full-period executive risk narrative and action plan |
+| `POST` | `/api/v1/treasury/payment-calendar/risk-forecast/days/{date}` | Synthesizes granular day-level liquidity narrative |
+| `POST` | `/api/v1/treasury/payment-calendar/risk-forecast/explain` | Explains specific risk driver scores and underlying payment triggers |
+| `GET` | `/health` | Service health check |
 
 ---
 
-## 💻 Mahalliy muhitda ishga tushirish
+## 💻 Installation & Quickstart
 
-1. Virtual muhitni yarating va bog'liqliklarni o'rnating:
 ```bash
+# 1. Clone the repository:
+git clone https://github.com/quvonchbek212/uzassets-treasury-risk-ai.git
+cd uzassets-treasury-risk-ai
+
+# 2. Virtual environment:
 python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
+source .venv/bin/activate  # Windows: .venv\Scriptsctivate
 pip install -r requirements.txt
-```
 
-2. `.env` faylini sozlang:
-```bash
+# 3. Configure environment:
 cp .env.example .env
-# .env faylida GEMINI_API_KEY yoki VLLM sozlamalarini belgilang
-```
+# Set GEMINI_API_KEY or VLLM credentials in .env
 
-3. Serverni ishga tushiring:
-```bash
-python main.py
-# yoki
-uvicorn main:app --host 0.0.0.0 --port 8002 --reload
-```
-Swagger UI: `http://localhost:8002/docs`
-
-4. Testlarni ishga tushirish:
-```bash
+# 4. Run tests (100% offline verification):
 pytest risk_forecast/tests.py -v
+
+# 5. Launch the service:
+python main.py
 ```
 
 ---
 
-## 🔒 Xavfsizlik
+## 📬 Contact
 
-Barcha maxfiy ma'lumotlar, parollar va API kalitlar faqat lokal `.env` faylida saqlanadi. Loyihada `.gitignore` orqali hech qanday kalitlar ommaviy repozitoriyga chiqib ketmasligi to'liq ta'minlangan.
+* **Author:** Quvonchbek Begimqulov
+* **LinkedIn:** [linkedin.com/in/kuvonchbek-begimkulov](https://linkedin.com/in/kuvonchbek-begimkulov)
+* **Email:** [begimqulovquvonchbek53@gmail.com](mailto:begimqulovquvonchbek53@gmail.com)
+* **GitHub:** [@quvonchbek212](https://github.com/quvonchbek212)
